@@ -8,8 +8,8 @@ Brail:-
      # You can add multiple images for generating a bigger Dataset
      
      
-Braille_Dataset:-
-     # This folder consists of the images generated using Datagen.py 
+Braille_Dataset.zip:-
+     # This zip has a folder that contains the images generated using Datagen.py 
      
      #This is the dataset which is used for training
      
