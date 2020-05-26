@@ -19,7 +19,7 @@ Braille_Dataset:-
         and the type of data augmentation it went through.
         (i.e whs - width height shift, rot - Rotation, dim - brightness)
         Dataset composition:
-        26 characters * 3 Augmentations * 20 different images of different augmentation values (i.e different shift,rotational and          brightness values.)
+        26 characters * 3 Augmentations * 20 different images of different augmentation values (i.e different shift,rotational and      brightness values.)
         
 BrailleTrain.py:-
       # The file used for training the CNN Model
