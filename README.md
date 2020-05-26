@@ -2,9 +2,12 @@
 A  Simpe Tensorflow/ Keras Implementation of Braille Character Recognition using CNN
 
 File/ Folder Description:
+
 Brail:-
      # This folder consists of subfolders of each alphabet. Each alphabet subfolder contains one corresponding Braille character image.
      # You can add multiple images for generating a bigger Dataset
+     
+     
 Braille_Dataset:-
      # This folder consists of the images generated using Datagen.py 
      #This is the dataset which is used for training
