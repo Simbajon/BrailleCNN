@@ -35,3 +35,15 @@ BrailleTest.py:-
 Braille.h5:-
       # PreTrained Model File.
       
+HyperBraille.ipynb:-
+      # A HyperResnet training Implementation of Braille Recogntion:
+      
+      # For this purpose KerasTuner was Used
+      # The HyperResnet tuner along with Bayesian Optimization was used for getting the best Model
+      # The number of training epochs was set to 50 with max_trials for search set to 3
+      
+      #Results:-
+          # The accuracy of the previous Simple CNN Implementation was 88% whereas the Hyper Implementation was 93.4%.
+          # This accuracy can be increased by running the Tuner for more trials and by increasing epochs.
+          
+      
