@@ -10,7 +10,9 @@ Brail:-
      
 Braille_Dataset:-
      # This folder consists of the images generated using Datagen.py 
+     
      #This is the dataset which is used for training
+     
      #Image Description:
         Each image is a 28x28 image in BW Scale.
         Each image name consists of the character alphabet and the number of the image
@@ -21,10 +23,12 @@ Braille_Dataset:-
         
 BrailleTrain.py:-
       # The file used for training the CNN Model
+      
       #Library used was Keras
       
 BrailleTest.py:-
       # The file used for training 
+      
       # Pass your own image file path at line 35 for prediction. (Try the a1.jpg and p.jpg file)
       
       
