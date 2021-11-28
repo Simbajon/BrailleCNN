@@ -1,5 +1,7 @@
 # BrailleCNN
-A  Simpe Tensorflow/ Keras Implementation of Braille Character Recognition using CNN
+A  Simpe Tensorflow/ Keras Implementation of Braille Character Recognition using Resnet CNN
+
+Dataset: [Braille Character Dataset](https://www.kaggle.com/shanks0465/braille-character-dataset)
 
 File/ Folder Description:
 
