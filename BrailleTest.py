@@ -1,13 +1,12 @@
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from PIL import Image
-import cv2
 import os
+import torch.nn.functional as F
 
-# Re-define your BrailleDataset to load test data
+# Dataset as before, no changes needed here
 class BrailleDataset(torch.utils.data.Dataset):
     def __init__(self, root_dir, transform=None):
         self.images = []
@@ -38,55 +37,61 @@ class BrailleDataset(torch.utils.data.Dataset):
         label = self.labels[idx]
         return img, label
 
-# CNN Model definition (same as training)
+# Updated BrailleCNN matching training model
 class BrailleCNN(nn.Module):
     def __init__(self):
         super(BrailleCNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 28, kernel_size=3)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(28 * 13 * 13, 128)
-        self.dropout = nn.Dropout(0.2)
-        self.fc2 = nn.Linear(128, 26)
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),  # 28->14
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2, 2),  # 14->7
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(128 * 7 * 7, 256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.3),
+            nn.Linear(256, 26)
+        )
 
     def forward(self, x):
-        x = self.pool(torch.relu(self.conv1(x)))
-        x = self.flatten(x)
-        x = torch.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = self.fc2(x)
+        x = self.features(x)
+        x = self.classifier(x)
         return x
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load the model
 model = BrailleCNN().to(device)
-model.load_state_dict(torch.load("Braille.pth", map_location=device))
+model.load_state_dict(torch.load("best_braille_cnn.pth", map_location=device))
 model.eval()
 
-# Define the same transforms used during training
+# Use test/val transform only
 transform = transforms.Compose([
     transforms.Resize((28, 28)),
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
 
-# Load full dataset again
 dataset = BrailleDataset("Braille_Dataset", transform=transform)
 
-# Split same way as training (you can hardcode sizes or save splits)
+# Same split as training
 total_size = len(dataset)
 train_size = int(0.7 * total_size)
 val_size = int(0.15 * total_size)
 test_size = total_size - train_size - val_size
 
-_, _, test_dataset = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
+_, _, test_dataset = random_split(dataset, [train_size, val_size, test_size])
 
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-alp = list("abcdefghijklmnopqrstuvwxyz")
-
-# Evaluate on test dataset
 correct = 0
 total = 0
 
@@ -94,9 +99,8 @@ with torch.no_grad():
     for inputs, labels in test_loader:
         inputs, labels = inputs.to(device), labels.to(device)
         outputs = model(inputs)
-        probs = F.softmax(outputs, dim=1)
-        predicted = torch.argmax(probs, dim=1)
+        predicted = outputs.argmax(dim=1)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print(f"Test Accuracy on split test dataset: {100 * correct / total:.2f}%")
+print(f"Test Accuracy: {100 * correct / total:.2f}%")
